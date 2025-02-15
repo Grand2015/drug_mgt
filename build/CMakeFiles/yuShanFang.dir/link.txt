@@ -1,1 +1,0 @@
-/usr/bin/gcc CMakeFiles/yuShanFang.dir/src/common.c.o CMakeFiles/yuShanFang.dir/src/main.c.o CMakeFiles/yuShanFang.dir/src/shell/shell_server.c.o CMakeFiles/yuShanFang.dir/src/drugMgt/durgMgt.c.o CMakeFiles/yuShanFang.dir/src/storage/storage.c.o -o yuShanFang  -lrt -lpthread -lsqlite3 
