@@ -11,6 +11,12 @@
 #include <sys/time.h>
 #include <time.h>
 
-//#include <stdlib.h>
+#include <stdlib.h>
+#include <arpa/inet.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+
+
+#include <math.h>
 
 #endif

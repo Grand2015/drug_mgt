@@ -9,6 +9,7 @@ DATE    :   2025/01/29
 #include "durgMgt.h"
 #include "shell_server.h"
 #include "storage.h"
+#include "mail.h"
 
 void print_sysinfo()
 {
@@ -32,6 +33,8 @@ int main()
     }
 
     drug_mgt_deal();
+
+    mail_server_deal();
 
     printf("WELCOME TO YUSHANFANG.\n\n");
 
