@@ -10,6 +10,7 @@ DATE    :   2025/01/29
 #include "shell_server.h"
 #include "storage.h"
 #include "mail.h"
+#include "common.h"
 
 void print_sysinfo()
 {
@@ -24,6 +25,8 @@ int main()
 {
     int ret = 0;
     print_sysinfo();
+
+    hww_print_init(HWW_DEBUG_LEVEL_ERR);
 
     shell_cmd_server();
 

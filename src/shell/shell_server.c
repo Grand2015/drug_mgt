@@ -3,6 +3,7 @@
 #include "common.h"
 #include "durgMgt.h"
 #include "storage.h"
+#include "mail.h"
 
 
 static SHELL_CMD_INFO_T stShellCMD[SHELL_CMD_MAX] = {0};
@@ -119,7 +120,7 @@ static int shell_insert_durg_info(char *arg, int arg_len)
     {
         if (NULL != strstr(arg, "quit"))
         {
-            printf("[%s:%d]QUIT INSERT MODE.\n", __FUNCTION__, __LINE__);
+            HWW_PRINT(HWW_DEBUG_LEVEL_INFO, "QUIT INSERT MODE.\n");
             if(0 != strlen(s_stDrugInfo.name))
             {
                 insert_drug_info(&s_stDrugInfo);
@@ -129,7 +130,7 @@ static int shell_insert_durg_info(char *arg, int arg_len)
         else if (NULL != strstr(arg, "full_data"))
         {
             shell_get_full_data(&s_stDrugInfo, arg+strlen("full_data")+1, arg_len-(strlen("full_data")+1));
-            printf("[%d]\nname:\t%s\nitem:\t%s\nmanufacture_date:\t%s\nexpiration_date:\t%s\nindications:\t%s\ndisable_description:\t%s\n",
+            HWW_PRINT(HWW_DEBUG_LEVEL_HINT, "[%d]\nname:\t%s\nitem:\t%s\nmanufacture_date:\t%s\nexpiration_date:\t%s\nindications:\t%s\ndisable_description:\t%s\n",
                 index, s_stDrugInfo.name, s_stDrugInfo.item, s_stDrugInfo.manufacture_date, s_stDrugInfo.expiration_date,
                 s_stDrugInfo.indications, s_stDrugInfo.disable_description);
 
@@ -141,20 +142,20 @@ static int shell_insert_durg_info(char *arg, int arg_len)
             {
                 if (NULL != strstr(arg, durg_param[index]))
                 {  
-                    printf("[%s:%d]param is %s\n", __FUNCTION__, __LINE__, durg_param[index]);
+                    HWW_PRINT(HWW_DEBUG_LEVEL_HINT, "param is %s\n", durg_param[index]);
                     shell_get_drug_param_point_by_index(&s_stDrugInfo, &param_point, index);
                     
                     if (NULL != param_point)
                     {
                         memcpy(param_point, arg+strlen(durg_param[index])+1, arg_len-(strlen(durg_param[index])+1));
                         param_point = NULL;
-                        printf("[%d]\nname:\t%s\nitem:\t%s\nmanufacture_date:\t%s\nexpiration_date:\t%s\nindications:\t%s\ndisable_description:\t%s\n",
+                        HWW_PRINT(HWW_DEBUG_LEVEL_HINT, "[%d]\nname:\t%s\nitem:\t%s\nmanufacture_date:\t%s\nexpiration_date:\t%s\nindications:\t%s\ndisable_description:\t%s\n",
                             index, s_stDrugInfo.name, s_stDrugInfo.item, s_stDrugInfo.manufacture_date, s_stDrugInfo.expiration_date,
                             s_stDrugInfo.indications, s_stDrugInfo.disable_description);
                     }
                     else
                     {
-                        printf("[%s:%d]param_point is NULL \n", __FUNCTION__, __LINE__);
+                        HWW_PRINT(HWW_DEBUG_LEVEL_ERR, "param_point is NULL \n");
                     }
                 }        
             }
@@ -175,14 +176,14 @@ static int shell_cmd_reg(char *cmd_str, void *cmd_deal, char *commit)
             memcpy(stShellCMD[index].cmd, cmd_str, strlen(cmd_str));
             memcpy(stShellCMD[index].commit, commit, strlen(commit));
             stShellCMD[index].cmd_fun = cmd_deal;
-            //printf("[%s:%d]CMD [%s] REG SUCCESSFULLY.\n", __FUNCTION__, __LINE__, cmd_str);
+            HWW_PRINT(HWW_DEBUG_LEVEL_HINT, "CMD [%s] REG SUCCESSFULLY.\n", cmd_str);
             return 0;
         }
     }
 
     if(index >= SHELL_CMD_MAX)
     {
-        printf("[%s:%d]SHELL CMD IS OUTOF MAX!\n", __FUNCTION__, __LINE__);
+        HWW_PRINT(HWW_DEBUG_LEVEL_ERR, "SHELL CMD IS OUTOF MAX!\n");
         return -1;
     }
 
@@ -199,7 +200,7 @@ static int shell_show_durg_info()
     {
         if(0 != strlen(stDrugInfo[index].name))
         {
-            printf("[%s]\nname:\t%s\nitem:\t%s\nmanufacture_date:\t%s\nexpiration_date:\t%s\nindications:\t%s\ndisable_description:\t%s\n",
+            HWW_PRINT(HWW_DEBUG_LEVEL_HINT, "[%s]\nname:\t%s\nitem:\t%s\nmanufacture_date:\t%s\nexpiration_date:\t%s\nindications:\t%s\ndisable_description:\t%s\n",
             stDrugInfo[index].id, stDrugInfo[index].name, stDrugInfo[index].item, stDrugInfo[index].manufacture_date, stDrugInfo[index].expiration_date,
             stDrugInfo[index].indications, stDrugInfo[index].disable_description);
         }
@@ -210,19 +211,54 @@ static int shell_show_durg_info()
 
 static int shell_select_durg_info(char *arg, int arg_len)
 {
-    printf("[%s:%d]HAVE NOT DONE\n", __FUNCTION__, __LINE__);
+    HWW_PRINT(HWW_DEBUG_LEVEL_INFO, "HAVE NOT DONE\n");
     return 0;
 }
 
 static int shell_del_durg_info(char *arg, int arg_len)
 {
-    printf("[%s:%d]ID IS %s\n", __FUNCTION__, __LINE__, arg);
-    
+    HWW_PRINT(HWW_DEBUG_LEVEL_INFO, "ID IS %s\n", arg);
     storage_delete_drug_info_by_id(arg);
 
     return 0;
 }
 
+
+static int shell_send_mail(char *arg, int arg_len)
+{
+    HWW_PRINT(HWW_DEBUG_LEVEL_INFO, "TEST MAIL IS %s\n", arg);
+    
+    //mail_server_send_mail(arg, NULL, NULL);
+    mail_server_send_mail("hongweiwei2023@163.com", "Test Email 02", "This is a test email sent from C language.");
+    return 0;
+}
+
+static int shell_set_log_level(char *arg, int arg_len)
+{
+    HWW_PRINT(HWW_DEBUG_LEVEL_INFO, "LEVEL IS %s\n", arg);
+    HWW_DEBUG_LEVEL_E debug_level = HWW_DEBUG_LEVEL_ERR;
+    
+    if (0 == strcmp("error", arg))
+    {
+        debug_level = HWW_DEBUG_LEVEL_ERR;
+    }
+    else if (0 == strcmp("info", arg))
+    {
+        debug_level = HWW_DEBUG_LEVEL_INFO;
+    }
+    else if (0 == strcmp("hint", arg))
+    {
+        debug_level = HWW_DEBUG_LEVEL_HINT;
+    }
+    else
+    {
+        HWW_PRINT(HWW_DEBUG_LEVEL_ERR, "LEVEL OF %s IS ERR\n", arg);
+    }
+
+    hww_print_init(debug_level);
+
+    return 0;
+}
 
 static int shell_cmd_reg_deal()
 {
@@ -235,6 +271,10 @@ static int shell_cmd_reg_deal()
     shell_cmd_reg("select", shell_select_durg_info, "SELECT DRUG INFO.");
 
     shell_cmd_reg("delete", shell_del_durg_info, "DELETE DRUG INFO BY ID.");
+
+    shell_cmd_reg("email", shell_send_mail, "SEND TEST EMAIL");
+
+    shell_cmd_reg("log_level", shell_set_log_level, "SET LOG LEVEL");
 
     
     return 0;
@@ -254,14 +294,14 @@ static int get_keyboard_input(char *cmd, int cmd_len, char* arg, int arg_len)
         index++;
     }
 
-    //printf("[%s:%d]INPUT DATA:%s\n", __FUNCTION__, __LINE__, str);
+    HWW_HINT("INPUT DATA:%s\n", str);
 
     pos = strstr(str, " ");
     if (NULL != pos)
     {
         memcpy(cmd, str, MIN(pos-str, cmd_len));
         memcpy(arg, pos+1, MIN(strlen(str)-(pos-str+1), arg_len));
-        printf("[%s:%d]CMD:%s, ARG:%s\n", __FUNCTION__, __LINE__, cmd, arg);
+        HWW_PRINT(HWW_DEBUG_LEVEL_INFO, "CMD:%s, ARG:%s\n", cmd, arg);
     }
     else
     {
@@ -277,19 +317,13 @@ static int shell_cmd_listion_pthread()
     char cmd[SHELL_CMD_LEN] = {0};
     char arg[SHELL_ARG_LEN] = {0};
     SHELL_MSG_T stShellMsg = {0};
-    //printf("[%s:%d]SHELL_CMD_LISTION_PTHREAD CREATE.\n", __FUNCTION__, __LINE__);
 
     while(1)
     {
-        //printf("[%s:%d]LISTION LOOP\n", __FUNCTION__, __LINE__);
         memset(cmd, 0, SHELL_CMD_LEN);
         memset(arg, 0, SHELL_ARG_LEN);
 
-        //scanf("%s %s", cmd, arg);
-        
         get_keyboard_input(cmd, SHELL_CMD_LEN, arg, SHELL_ARG_LEN);
-
-
         if (0 != strlen(cmd))
         {
             memset(&stShellMsg, 0, sizeof(stShellMsg));
@@ -299,11 +333,11 @@ static int shell_cmd_listion_pthread()
             /* send cmd */
             if (mq_send(shell_mqt, (const char *)&stShellMsg, sizeof(stShellMsg), 0) < 0)
             {
-                printf("[%s:%d]MQ_SEND ERR!\n", __FUNCTION__, __LINE__);
+                HWW_PRINT(HWW_DEBUG_LEVEL_ERR, "MQ_SEND ERR!\n");
             }
             else
             {
-                //printf("[%s:%d]MQ_SEND SUCCESSFULLY[%s]\n", __FUNCTION__, __LINE__, stShellMsg.cmd);
+                HWW_PRINT(HWW_DEBUG_LEVEL_INFO, "MQ_SEND SUCCESSFULLY[%s]\n", stShellMsg.cmd);
             }
             
         }
@@ -321,7 +355,7 @@ static int shell_cmd_listion()
     ret = pthread_create(&thread, NULL, (void *)shell_cmd_listion_pthread, 0);
     if (0 != ret)
     {
-        printf("[%s:%d]PTHREAD_CREAT ERR(%d)\n", __FUNCTION__, __LINE__, ret);
+        HWW_PRINT(HWW_DEBUG_LEVEL_ERR, "PTHREAD_CREAT ERR(%d)\n", ret);
         return -1;
     }
 
@@ -339,8 +373,6 @@ static int shell_cmd_process_deal(SHELL_MSG_T *msg)
 
     memcpy(&stShellMsg, msg, sizeof(stShellMsg));
     
-    //printf("[%s:%d]CMD:%s, ARG:%s\n", __FUNCTION__, __LINE__, stShellMsg.cmd, stShellMsg.arg);
-
     for(index = 0; index < SHELL_CMD_MAX; index++)
     {
         if (0 == strcmp(shell_cmd[index].cmd, msg->cmd))
@@ -351,7 +383,7 @@ static int shell_cmd_process_deal(SHELL_MSG_T *msg)
             }
             else
             {
-                printf("[%s:%d]THE PROC FUN OF CMD[%s] IS UNREG.\n", __FUNCTION__, __LINE__, msg->cmd);
+                HWW_PRINT(HWW_DEBUG_LEVEL_ERR, "THE PROC FUN OF CMD[%s] IS UNREG.\n", msg->cmd);
             }
 
             break;
@@ -360,7 +392,7 @@ static int shell_cmd_process_deal(SHELL_MSG_T *msg)
     
     if (index >= SHELL_CMD_MAX)
     {
-        printf("[%s:%d]THE CMD[%s] IS UNREG.\n", __FUNCTION__, __LINE__, msg->cmd);
+        HWW_PRINT(HWW_DEBUG_LEVEL_ERR, "THE CMD[%s] IS UNREG.\n", msg->cmd);
     }
 
     return 0;
@@ -371,8 +403,6 @@ static int shell_cmd_process_pthread()
 {
     SHELL_MSG_T stShellMsg = {0};
     int ret = 0;
-
-    //printf("[%s:%d]SHELL_CMD_PROCESS_PTHREAD CREATE.\n", __FUNCTION__, __LINE__);
 
     while(1)
     {
@@ -398,7 +428,7 @@ static int shell_cmd_process()
     ret = pthread_create(&thread, NULL, (void *)shell_cmd_process_pthread, 0);
     if (0 != ret)
     {
-        printf("[%s:%d]PTHREAD_CREAT ERR(%d)\n", __FUNCTION__, __LINE__, ret);
+        HWW_PRINT(HWW_DEBUG_LEVEL_ERR, "PTHREAD_CREAT ERR(%d)\n", ret);
         return -1;
     }
 
@@ -420,11 +450,11 @@ static int shell_mq_init()
     shell_mqt = mq_open(SHELL_MQ, O_CREAT|O_RDWR, 0644, &attr);
     if (-1 == shell_mqt)
     {
-        printf("[%s:%d]MQ_OPEN ERR!\n", __FUNCTION__, __LINE__);
+        HWW_PRINT(HWW_DEBUG_LEVEL_ERR, "MQ_OPEN ERR!\n");
         return -1;
     }
 
-    //printf("[%s:%d]SHELL MQ(%d) INIT SUCCESSFULLY.\n", __FUNCTION__, __LINE__, shell_mqt);
+    HWW_PRINT(HWW_DEBUG_LEVEL_INFO, "SHELL MQ(%d) INIT SUCCESSFULLY.\n", shell_mqt);
 
     return 0;
 }

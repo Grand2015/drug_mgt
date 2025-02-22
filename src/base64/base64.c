@@ -1,6 +1,7 @@
 
 #include "c_std_inc.h"
 #include "base64.h"
+#include "common.h"
 
 #define HWW_BASE64_TABLE_LEN		(64)
 #define HWW_BINARY_LEN				(8)
@@ -8,32 +9,9 @@
 #define HWW_BASE64_PRIMARY_INTERVAL	(24)
 #define HWW_BASE64_SECOND_INTERVAL	(6)
 #define	HWW_BASE64_PAD_CHAR			'='
-#define HWW_TRUE					(1)
-#define HWW_FALSE					(0)
-#define HWW_OK						(0)
-#define HWW_ERROR					(-1)
-
-#define MIN(a,b) ((a) < (b) ? (a) : (b))
-
-#define HWW_INFO(info,...)  \
-do{ \
-    if(g_debug_level>=HWW_DEBUG_LEVEL_INFO){\
-        printf("[Info] %s,%s,%d:"info"",__FILE__,__FUNCTION__,__LINE__,##__VA_ARGS__);}\
-}while(0)
- 
- 
-#define HWW_HINT(info,...)  \
-do{ \
-    if(g_debug_level>=HWW_DEBUG_LEVEL_HINT){\
-        printf("[Debug] %s,%s,%d:"info"",__FILE__,__FUNCTION__,__LINE__,##__VA_ARGS__);}\
-}while(0)
 
 
-#define HWW_ERR(info,...)  \
-do{ \
-    if(g_debug_level>=HWW_DEBUG_LEVEL_ERR){\
-        printf("[Error] %s,%s,%d:"info"",__FILE__,__FUNCTION__,__LINE__,##__VA_ARGS__);}\
-}while(0)
+
 
 char base64_table[HWW_BASE64_TABLE_LEN] = { 'A','B','C','D','E','F','G','H',
 											'I','J','K','L','M','N','O','P',
@@ -44,7 +22,7 @@ char base64_table[HWW_BASE64_TABLE_LEN] = { 'A','B','C','D','E','F','G','H',
 											'w','x','y','z','0','1','2','3',
 											'4','5','6','7','8','9','+','/'};
 
-HWW_DEBUG_LEVEL_E g_debug_level = HWW_DEBUG_LEVEL_ERR;
+
 
 
 static void hww_print_binary_data(char *str_binary, int len_binary, const char *fun, int line)
@@ -53,6 +31,7 @@ static void hww_print_binary_data(char *str_binary, int len_binary, const char *
 	
 	int i =0;
 
+    #if 0
 	if (g_debug_level > HWW_DEBUG_LEVEL_ERR){
 		printf("[%s:%d]--------------PRINT BEGIN-----------------\n", fun, line);
 		printf("[%s:%d]--------------data len:%d-----------------\n", fun, line, len_binary);
@@ -61,6 +40,7 @@ static void hww_print_binary_data(char *str_binary, int len_binary, const char *
 			printf("%d ", str_binary[i]);
 		printf("\n[%s:%d]--------------PRINT END-----------------\n", fun, line);
 	}
+    #endif
 
 	return;
 }
@@ -95,11 +75,11 @@ static void hww_fill_0_by_bit(char *str_binary, int *p_len_binary)
 	int i =0;
 	
 	num_group = (int)ceil(len_binary*1.0/HWW_BASE64_SECOND_INTERVAL);
-	HWW_INFO("num_group:%d\n", num_group);
+	HWW_PRINT(HWW_DEBUG_LEVEL_INFO, "num_group:%d\n", num_group);
 
 	//2.1 补0
 	num_binary_miss = num_group*HWW_BASE64_SECOND_INTERVAL - len_binary;
-	HWW_INFO("num_binary_miss:%d\n", num_binary_miss);
+	HWW_PRINT(HWW_DEBUG_LEVEL_INFO, "num_binary_miss:%d\n", num_binary_miss);
 
 	for (i = 0; i < num_binary_miss; i++)
 		str_binary[len_binary+i] = 0;
@@ -118,15 +98,15 @@ static int hww_cal_equal_symbol_count(int len_binary)
 	int num_equal_symbol = 0;
 	
 	num_group = (int)ceil(len_binary*1.0/HWW_BASE64_PRIMARY_INTERVAL);
-	HWW_INFO("num_group:%d\n", num_group);
+	HWW_PRINT(HWW_DEBUG_LEVEL_INFO, "num_group:%d\n", num_group);
 
 	//3.1 缺0数量
 	num_binary_miss = num_group*HWW_BASE64_PRIMARY_INTERVAL - len_binary;
-	HWW_INFO("num_binary_miss:%d\n", num_binary_miss);
+	HWW_PRINT(HWW_DEBUG_LEVEL_INFO, "num_binary_miss:%d\n", num_binary_miss);
 
 	//3.2 缺#数量
 	num_equal_symbol = num_binary_miss/HWW_BASE64_SECOND_INTERVAL;
-	HWW_INFO("num_equal_symbol:%d\n", num_equal_symbol);
+	HWW_PRINT(HWW_DEBUG_LEVEL_INFO, "num_equal_symbol:%d\n", num_equal_symbol);
 
 	return num_equal_symbol;
 }
@@ -182,7 +162,7 @@ int hww_base64_encryption(char *str_input, int len_input, char *out_put, int len
 	int len_binary = 0, len_decimalism = 0;
 
 	if (len_input > HWW_BASE64_DATE_LEN_MAX){
-		HWW_ERR("len(%d) of base64 date is out of range(%d)\n", len_input, HWW_BASE64_DATE_LEN_MAX);
+		HWW_PRINT(HWW_DEBUG_LEVEL_ERR, "len(%d) of base64 date is out of range(%d)\n", len_input, HWW_BASE64_DATE_LEN_MAX);
 		return -1;
 	}
 
@@ -217,7 +197,7 @@ int hww_base64_encryption(char *str_input, int len_input, char *out_put, int len
 	
 	len_decimalism += num_equal_symbol;
 
-	HWW_INFO("str_decimalism:%s\n", str_decimalism);
+	HWW_PRINT(HWW_DEBUG_LEVEL_INFO, "str_decimalism:%s\n", str_decimalism);
 
 	memcpy(out_put, str_decimalism, MIN(len_decimalism, len_output));
 
@@ -231,11 +211,11 @@ static void hww_base64_filter_equal_symbol(char *str_input, int *plen)
 	int i = 0;
 	int len = *plen;
 	
-	HWW_INFO("str_input:%s\n", str_input);
+	HWW_PRINT(HWW_DEBUG_LEVEL_INFO, "str_input:%s\n", str_input);
 
 
 	for (i = len-1; i >= 0; i--){
-		HWW_INFO("str_input[%d]:%c\n", i, str_input[i]);
+		HWW_PRINT(HWW_DEBUG_LEVEL_INFO, "str_input[%d]:%c\n", i, str_input[i]);
 		if (str_input[i] == HWW_BASE64_PAD_CHAR){
 			len--;
 			
@@ -244,7 +224,7 @@ static void hww_base64_filter_equal_symbol(char *str_input, int *plen)
 		else break;
 	}
 	
-	HWW_INFO("len:%d\n", len);
+	HWW_PRINT(HWW_DEBUG_LEVEL_INFO, "len:%d\n", len);
 
 	*plen = len;
 
@@ -257,14 +237,14 @@ static int hww_base_encrytion_data_check(char *str_input, int len_input)
 	int not_equal_symbol = HWW_FALSE;
 
 	if (len_input > HWW_BASE64_DATE_LEN_MAX){
-		HWW_ERR("len(%d) of base64 date is out of range(%d)\n", len_input, HWW_BASE64_DATE_LEN_MAX);
+		HWW_PRINT(HWW_DEBUG_LEVEL_ERR, "len(%d) of base64 date is out of range(%d)\n", len_input, HWW_BASE64_DATE_LEN_MAX);
 		return HWW_FALSE;
 	}
 
 	for (i = len_input-1; i >= 0; i--){
 		for (j = 0; j < HWW_BASE64_TABLE_LEN; j++){
 			if (str_input[i] == base64_table[j]){
-				HWW_INFO("str_input[%d]:%c,base64_table[%d]:%c.\n",i, str_input[i], j, base64_table[j]);
+				HWW_PRINT(HWW_DEBUG_LEVEL_INFO, "str_input[%d]:%c,base64_table[%d]:%c.\n",i, str_input[i], j, base64_table[j]);
 				not_equal_symbol = HWW_TRUE;
 				break;
 			}
@@ -332,7 +312,7 @@ int hww_base64_decryption(char *str_input, int len_input, char *out_put, int len
 
 	//4.对8取余
 	int cnt = len_binary / HWW_BINARY_LEN;
-	HWW_INFO("len_binary:%d, cnt:%d\n", len_binary, cnt);
+	HWW_PRINT(HWW_DEBUG_LEVEL_INFO, "len_binary:%d, cnt:%d\n", len_binary, cnt);
 
 	//5.去掉补位数据
 	memcpy(str_binary_res, str_binary, cnt*HWW_BINARY_LEN);
@@ -344,11 +324,3 @@ int hww_base64_decryption(char *str_input, int len_input, char *out_put, int len
 	return HWW_OK;
 }
 
-void hww_base64_init(HWW_DEBUG_LEVEL_E debug_level)
-{
-	if (debug_level < HWW_DEBUG_LEVEL_ERR || debug_level > HWW_DEBUG_LEVEL_HINT) return;
-
-	g_debug_level = debug_level;
-
-	return;
-}

@@ -1,7 +1,7 @@
 #include "c_std_inc.h"
 #include "storage.h"
 #include "sqlite3.h"
-//#include "sqlite3ext.h"
+#include "common.h"
 
 static sqlite3 *drug_info_db;
 
@@ -23,11 +23,11 @@ int storage_server_insert_drug_info(DRUG_INFO_T *pstDrugInfo)
     sprintf(sql, INSERT_DRUG_INFO, pstDrugInfo->id, pstDrugInfo->name, pstDrugInfo->item, \
         pstDrugInfo->manufacture_date, pstDrugInfo->expiration_date, pstDrugInfo->indications, pstDrugInfo->disable_description);
 
-    printf("sql:%s\n", sql);
+    HWW_PRINT(HWW_DEBUG_LEVEL_HINT, "sql:%s\n", sql);
     rc = sqlite3_exec(*db, sql, NULL, 0, &zErrMsg);
     if (SQLITE_OK != rc)
     {
-        printf("[%s:%d]SQLITE3 EXEC FAILED(%d,%s).\n", __FUNCTION__, __LINE__, rc, zErrMsg);
+        HWW_PRINT(HWW_DEBUG_LEVEL_ERR, "SQLITE3 EXEC FAILED(%d,%s).\n", rc, zErrMsg);
         sqlite3_free(zErrMsg);
         return -1;
     }   
@@ -54,7 +54,7 @@ DRUG_INFO_T* storage_server_select_drug_info()
     rc = sqlite3_prepare_v2(*db, sql, -1, &stmt, NULL);
     if (rc != SQLITE_OK) 
     {
-        printf("[%s:%d]SQLITE3 EXEC FAILED(%d:%s).\n", __FUNCTION__, __LINE__, rc, zErrMsg);
+        HWW_PRINT(HWW_DEBUG_LEVEL_ERR, "SQLITE3 EXEC FAILED(%d:%s).\n" , rc, zErrMsg);
         return NULL;
     }
 
@@ -105,11 +105,11 @@ int storage_delete_drug_info_by_id(char *id)
 
     sprintf(sql, DELETE_DRUG_INFO_BY_ID, id);
 
-    printf("sql:%s\n", sql);
+    HWW_PRINT(HWW_DEBUG_LEVEL_HINT, "sql:%s\n", sql);
     rc = sqlite3_exec(*db, sql, NULL, 0, &zErrMsg);
     if (SQLITE_OK != rc)
     {
-        printf("[%s:%d]SQLITE3 EXEC FAILED(%d,%s).\n", __FUNCTION__, __LINE__, rc, zErrMsg);
+        HWW_PRINT(HWW_DEBUG_LEVEL_ERR, "SQLITE3 EXEC FAILED(%d,%s).\n" , rc, zErrMsg);
         sqlite3_free(zErrMsg);
         return -1;
     }   
@@ -135,7 +135,7 @@ int storage_server_create_database()
     } 
     else 
     {
-        printf("[%s:%d] getcwd() err\n", __FUNCTION__, __LINE__);
+        HWW_PRINT(HWW_DEBUG_LEVEL_ERR, "getcwd() err\n" );
         return -1;
     }
 
@@ -144,7 +144,7 @@ int storage_server_create_database()
     rc = sqlite3_open(db_url, db);
     if (SQLITE_OK != rc)
     {
-        printf("[%s:%d]SQLITE3 OPEN FAILED(%d).\n", __FUNCTION__, __LINE__, rc);
+        HWW_PRINT(HWW_DEBUG_LEVEL_ERR, "SQLITE3 OPEN FAILED(%d).\n" , rc);
         return -1;
     }
 
@@ -154,7 +154,7 @@ int storage_server_create_database()
         rc = sqlite3_exec(*db, sql, NULL, 0, &zErrMsg);
         if (SQLITE_OK != rc)
         {
-            printf("[%s:%d]SQLITE3 EXEC FAILED(%d:%s).\n", __FUNCTION__, __LINE__, rc, zErrMsg);
+            HWW_PRINT(HWW_DEBUG_LEVEL_ERR, "SQLITE3 EXEC FAILED(%d:%s).\n", rc, zErrMsg);
             sqlite3_free(zErrMsg);
             return -1;
         }   
@@ -170,7 +170,7 @@ int storage_server_deal()
     ret = storage_server_create_database();
     if (0 != ret)
     {
-        printf("[%s:%d]CREATE DATABASE FAILED(%d).\n", __FUNCTION__, __LINE__, ret);
+        HWW_PRINT(HWW_DEBUG_LEVEL_ERR, "CREATE DATABASE FAILED(%d).\n", ret);
         return -1;
     }
 

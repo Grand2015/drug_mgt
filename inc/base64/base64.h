@@ -3,11 +3,13 @@
 #ifndef __BASE64_HWW_H__
 #define __BASE64_HWW_H__
 
+#if 0
 typedef enum{
     HWW_DEBUG_LEVEL_ERR = 0,
     HWW_DEBUG_LEVEL_INFO,
     HWW_DEBUG_LEVEL_HINT
 }HWW_DEBUG_LEVEL_E;
+#endif
 
 
 /*
@@ -16,7 +18,7 @@ typedef enum{
 @param:
     debug_level
 */
-void hww_base64_init(HWW_DEBUG_LEVEL_E debug_level);
+//void hww_base64_init(HWW_DEBUG_LEVEL_E debug_level);
 
 /*
 @fuction:hww_base64_encryption

@@ -36,7 +36,7 @@ static int insert_drug_info_to_ram(DRUG_INFO_T *pstDrugInfo)
 
     if (index >= DRUG_NUM_MAX)
     {
-        printf("[%s:%d]DRUG INFO OUT OF RANGE.\n", __FUNCTION__, __LINE__);
+        HWW_PRINT(HWW_DEBUG_LEVEL_ERR, "DRUG INFO OUT OF RANGE.\n");
         return -1;
     }
 
@@ -115,11 +115,11 @@ static int drug_detect_expiration_date_pthread()
                 expiration_date = drug_get_time_stamp_of_expiration_date(stDrugInfo[index].expiration_date, strlen(stDrugInfo[index].expiration_date));
                 if (expiration_date < cur_time)
                 {
-                    printf("[%s:%d]THE DRUG(%s) IS OUT OF DATE.\n", __FUNCTION__, __LINE__, stDrugInfo[index].id);                    
+                    HWW_PRINT(HWW_DEBUG_LEVEL_ERR, "THE DRUG(%s) IS OUT OF DATE.\n",  stDrugInfo[index].id);                    
                 }
                 else if (expiration_date - cur_time <= _30_DAYS_S)
                 {
-                    printf("[%s:%d]THE DRUG(%s) HAS 30 DAYS LEFT TO EXPIRE.\n", __FUNCTION__, __LINE__, stDrugInfo[index].id);
+                    HWW_PRINT(HWW_DEBUG_LEVEL_ERR, "THE DRUG(%s) HAS 30 DAYS LEFT TO EXPIRE.\n", stDrugInfo[index].id);
                 }
             }
         }
@@ -138,7 +138,7 @@ static int drug_detect_expiration_date()
     ret = pthread_create(&thread, NULL, (void *)drug_detect_expiration_date_pthread, 0);
     if (0 != ret)
     {
-        printf("[%s:%d]PTHREAD_CREAT ERR(%d)\n", __FUNCTION__, __LINE__, ret);
+        HWW_PRINT(HWW_DEBUG_LEVEL_ERR, "PTHREAD_CREAT ERR(%d)\n", ret);
         return -1;
     }
 

@@ -28,3 +28,104 @@ long long format_time_to_timestamp(struct tm* ptimeinfo)
 	//printf("ts :%ld\n", timestamp);
 	return timestamp;
 }
+
+HWW_DEBUG_LEVEL_E g_debug_level = HWW_DEBUG_LEVEL_ERR;
+// 定义颜色代码
+#define COLOR_RED     "\033[31m"
+#define COLOR_GREEN   "\033[32m"
+#define COLOR_YELLOW  "\033[33m"
+#define COLOR_BLUE    "\033[34m"
+#define COLOR_RESET   "\033[0m"
+
+void HWW_INFO(const char* format, ...)
+{
+    if(g_debug_level >= HWW_DEBUG_LEVEL_INFO)
+    {
+        va_list args;
+        va_start(args, format);
+
+        printf("%s[INFO][%s][%d]", COLOR_BLUE, __func__, __LINE__);
+        vprintf(format, args);
+        printf("%s", COLOR_RESET);
+
+        va_end(args);
+    }
+    return;
+}
+
+
+
+void log_print(HWW_DEBUG_LEVEL_E log_level, const char* func, int line, const char* format, ...)
+{
+    if (g_debug_level < log_level) return;
+
+    va_list args;
+    va_start(args, format);
+
+    switch (log_level)
+    {
+        case HWW_DEBUG_LEVEL_ERR:            
+            printf("%s[ERROR][%s][%d]", COLOR_RED, func, line);
+            break;
+        case HWW_DEBUG_LEVEL_INFO:
+            printf("%s[INFO][%s][%d]", COLOR_BLUE, func, line);
+            break;
+        case HWW_DEBUG_LEVEL_HINT:
+            printf("%s[HINT][%s][%d]", COLOR_GREEN, func, line);
+            break;
+        default:
+            break;
+    }
+
+    vprintf(format, args);
+    printf("%s", COLOR_RESET);
+
+    va_end(args);
+
+    return;
+}
+
+void HWW_HINT(const char* format, ...)
+{
+    if(g_debug_level >= HWW_DEBUG_LEVEL_HINT)
+    {
+        va_list args;
+        va_start(args, format);
+
+        printf("%s[HINT][%s][%d]", COLOR_GREEN, __func__, __LINE__);
+        vprintf(format, args);
+        printf("%s", COLOR_RESET);
+
+        va_end(args);
+    }
+
+    return;
+}
+
+
+void HWW_ERR(const char* format, ...)
+{
+    if(g_debug_level >= HWW_DEBUG_LEVEL_ERR)
+    {
+        va_list args;
+        va_start(args, format);
+
+        printf("%s[ERROR][%s][%d]", COLOR_RED, __func__, __LINE__);
+        vprintf(format, args);
+        printf("%s", COLOR_RESET);
+
+        va_end(args);
+    }
+
+    return;
+}
+
+
+void hww_print_init(HWW_DEBUG_LEVEL_E debug_level)
+{
+	if (debug_level < HWW_DEBUG_LEVEL_ERR || debug_level > HWW_DEBUG_LEVEL_HINT) return;
+
+	g_debug_level = debug_level;
+
+	return;
+}
