@@ -198,7 +198,7 @@ int mail_server_send_mail(char *to_mail, char *title, char *mail_body)
     send_smtp_command_ssl(ssl, MAIL_DATA_CMD, MAIL_SEND_CMD_ATTR_WR);
 
     // 发送邮件内容
-    char email_content[1024] = {0};
+    char email_content[BUFFER_SIZE*33] = {0};
     snprintf(email_content, sizeof(email_content), MAIL_CONNECT_CMD, USERNAME, to_mail, title, mail_body); // 替换为收件人邮箱
     send_smtp_command_ssl(ssl, email_content, MAIL_SEND_CMD_ATTR_WR);
 

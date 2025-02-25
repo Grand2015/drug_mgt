@@ -14,6 +14,8 @@
 
 #define DRUG_ID_LEN  20
 
+#define DURG_LIST_TEMPLET   "[%d]\nUUID:%s\nNAME:%s\nITEM:%s\nMANUFACETURE_DATE:%s\nEXPIRATION_DATE:%s\nINDICATIONS:%s\nNOTES:%s\n\n"
+#define DURG_MAIL_TITLE     "MEDICATION EXPIRATION REMINDER"
 
 typedef struct{
     char name[DRUG_NAME_LEN];
